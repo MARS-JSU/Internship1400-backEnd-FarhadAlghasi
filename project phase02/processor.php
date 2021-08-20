@@ -1,28 +1,28 @@
 <?php
-require_once 'pc.php';
-class processor
+require_once 'PowerCofficient.php';
+class Processor
 {
-    private $mono;
-    private $obj;
+    private array $monos;
+    private array $powerCofficientArray;
 
-    public function __construct($mono)
+    public function __construct($monos)
     {
-        $this->mono = $mono;
+        $this->monos = $monos;
     }
 
     public function getObj()
     {
-        return $this->obj;
+        return $this->powerCofficientArray;
     }
 
     public function makePower()
     {
-        foreach ($this->mono as $value)
+        foreach ($this->monos as $mono)
         {
-            $zp[]=explode('x^',$value);
+            $coeficientpower[]=explode('x^',$mono);
         }
-        $this->obj=$this->makeObj($zp);
-        $this->sortig($this->obj);
+        $this->powerCofficientArray=$this->makeObj($coeficientpower);
+        $this->sortig($this->powerCofficientArray);
     }
 
     private function sortig($obj)
@@ -42,13 +42,13 @@ class processor
         $this->simplify($obj);
     }
 
-    private function makeObj(array $zp)
+    private function makeObj(array $coeficientpower)
     {
-        foreach ($zp as $value)
+        foreach ($coeficientpower as $value)
         {
-            $this->obj[]=new pc($value[0],$value[1]);
+            $this->powerCofficientArray[]=new PowerCofficient($value[0],$value[1]);
         }
-        return $this->obj;
+        return $this->powerCofficientArray;
     }
 
     private function simplify($obj)
@@ -65,121 +65,128 @@ class processor
                     }
                     else
                     {
-                        $simple[]=new pc($newcoef,$obj[$i]->getpower());
+                        $simple[]=new PowerCofficient($newcoef,$obj[$i]->getpower());
                         $i=$j;
                         $newcoef=$obj[$i]->getcoefficient();
                     }
                 }
                 if($i!=$j)
                 {
-                    $simple[]=new pc($newcoef,$obj[$i]->getpower());
+                    $simple[]=new PowerCofficient($newcoef,$obj[$i]->getpower());
                     $i=$j;
                 }
             }
-            $this->obj=$simple;
+            $this->powerCofficientArray=$simple;
     }
 
-    public function makeMono()
+    public function makeMono():string
     {
-        foreach ($this->obj as $value)
+        foreach ($this->powerCofficientArray as $value)
         {
             if($value->getcoefficient()!=0)
             {
                 $array[]=$value->getcoefficient().'x^'.$value->getpower();
             }
         }
-        $this->toString($array);
+        $string=$this->toString($array);
+        return $string;
     }
 
-    private function toString(array $str)
+    private function toString(array $strings) : string
     {
-        foreach ($str as $value)
+        foreach ($strings as $string)
         {
-            if(strpos($value,'^1'))
+            if(strpos($string,'^1'))
             {
-                $value=str_replace('x^1','x',$value);
+                $string=str_replace('x^1','x',$string);
             }
-            if($value[0]!='-'&&$value[0]!='+')
+            if(
+                $string[0]!='-'&&
+                $string[0]!='+'
+              )
             {
-                $value="+".$value;
+                $string="+".$string;
             }
-            if(strpos($value,'^0'))
+            if(strpos($string,'^0'))
             {
-                $value=str_replace('x^0','',$value);
+                $string=str_replace('x^0','',$string);
             }
-            if(strpos($value,'+1x'))
+            if(strpos($string,'+1x'))
             {
-                $value=str_replace('+1x','+x',$value);
+                $string=str_replace('+1x','+x',$string);
             }
-            elseif (strpos($value,'-1x'))
+            elseif (strpos($string,'-1x'))
             {
-                $value=str_replace('-1x','-x',$value);
+                $string=str_replace('-1x','-x',$string);
             }
-            $string.=$value;
-
-
+            $str.=$string;
         }
-        echo $string;
+        return $str;
     }
     public function result($x)
     {
         $res=0;
-        foreach ($this->obj as $value)
+        foreach ($this->powerCofficientArray as $value)
         {
             $res+=$value->getcoefficient()*($x**$value->getpower());
         }
-        echo $res;
+        return $res;
     }
-    public function derivative()
+    public function derivative(): string
     {
-        foreach ($this->obj as  $value)
+        foreach ($this->powerCofficientArray as  $value)
         {
-            if($value->getpower()!=0 && $value->getcoefficient()!=0 && $value->getpower()!=1)
+            if(
+                $value->getpower()!=0 &&
+                $value->getcoefficient()!=0 &&
+                $value->getpower()!=1
+              )
             {
-                $dev[]=($value->getcoefficient()*$value->getpower()).'x^'.($value->getpower()-1);
+                $derivative[]=($value->getcoefficient()*$value->getpower()).'x^'.($value->getpower()-1);
             }
             elseif ($value->getpower()==1)
             {
-                $dev[]=$value->getcoefficient();
+                $derivative[]=$value->getcoefficient();
             }
         }
-        $this->toString($dev);
+        $derivative=$this->toString($derivative);
+        return $derivative;
     }
 
-    public function sum($object)
+    public function sum($object): string
     {
-        $newobj=array_merge($this->obj,$object->getObj());
+        $newobj=array_merge($this->powerCofficientArray,$object->getObj());
         $a=new processor('');
         $a->sortig($newobj);
-        $a->makeMono();
+        return $a->makeMono();
     }
-    public function sub($object)
+    public function sub($object):string
     {
 
         foreach ($object->getObj() as $value)
         {
             $ncoef=$value->getcoefficient()*(-1);
-            $temp[]=new pc($ncoef,$value->getpower());
+            $temp[]=new PowerCofficient($ncoef,$value->getpower());
         }
-        $newobject=array_merge($this->obj,$temp);
+        $newobject=array_merge($this->powerCofficientArray,$temp);
         $b=new processor('');
         $b->sortig($newobject);
-        $b->makeMono();
+        return $b->makeMono();
     }
     
-    public function mul($object)
+    public function mul($object):string
     {
-        foreach ($this->obj as $value)
+        foreach ($this->powerCofficientArray as $value)
         {
             foreach ($object->getObj() as $item)
             {
                 $newcof=$value->getcoefficient()*$item->getcoefficient();
                 $newpow=$value->getpower()+$item->getpower();
-                $array[]=new pc($newcof,$newpow);
+                $array[]=new PowerCofficient($newcof,$newpow);
             }
         }
         $c=new processor('');
         $c->sortig($array);
-        $c->makeMono();
+        return $c->makeMono();
     }
 }

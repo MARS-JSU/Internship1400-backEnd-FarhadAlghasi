@@ -1,15 +1,18 @@
 <?php
 require_once 'processor.php';
-class prepare
+class Prepare
 {
     private $expression;
     public function __construct($expression)
     {
         $this->expression=$expression;
     }
-    public function prepareCoefficient()
+    public function prepareCoefficient() : Processor
     {
-        if ($this->expression[0] != '+' && $this->expression[0] != '-')
+        if (
+            $this->expression[0] != '+' &&
+            $this->expression[0] != '-'
+            )
         {
             $this->expression = '+' . $this->expression;
         }
@@ -17,28 +20,30 @@ class prepare
 
         $this->expression = str_replace(['+x', '-x'], ['+1x', '-1x'], $this->expression);
 
-        $mono = explode(' ', $this->expression);
-        unset($mono[0]);
-        $mono=$this->preparePower($mono);
-        return new processor($mono);
+        $monos = explode(' ', $this->expression);
+        unset($monos[0]);
+        $monos=$this->preparePower($monos);
+        return new Processor($monos);
     }
-    private function preparePower(array $mono)
+    private function preparePower(array $monos)
     {
         $i = 0;
-        foreach ($mono as $value)
+        foreach ($monos as $mono)
         {
-            if (strpos($value, 'x') && !strpos($value, '^'))
+            if (
+                 strpos($mono, 'x') &&
+                !strpos($mono, '^')
+                )
             {
-                $value = $value . '^1';
+                $mono = $mono . '^1';
             }
-            elseif (!strpos($value, 'x'))
+            elseif (!strpos($mono, 'x'))
             {
-                $value = $value . 'x^0';
+                $mono = $mono . 'x^0';
             }
-            if(strpos($value,'x^'))
+            if(strpos($mono,'x^'))
             {
-                $temp[$i] = $value;
-                $i++;
+                $temp[$i++] = $mono;
             }
         }
         return $temp;

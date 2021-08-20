@@ -1,9 +1,9 @@
 <?php
 
-class pc
+class PowerCofficient
 {
-    private $coefficient;
-    private $power;
+    private string $coefficient;
+    private string $power;
 
     public function __construct($coefficient,$power)
     {

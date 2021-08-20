@@ -5,8 +5,8 @@ require_once 'processor.php';
 $exp1="+2x^2+3x^3-x^3+1";
 $exp2="3x^2-5x^3+x^4+3x^3";
 
-$ex1=new prepare($exp1);
-$ex2=new prepare($exp2);
+$ex1=new Prepare($exp1);
+$ex2=new Prepare($exp2);
 
 $process1=$ex1->prepareCoefficient();
 $process1->makePower();
