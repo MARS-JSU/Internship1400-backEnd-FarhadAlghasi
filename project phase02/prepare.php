@@ -3,11 +3,23 @@ require_once 'processor.php';
 class Prepare
 {
     private $expression;
+    private $monos;
+
     public function __construct($expression)
     {
         $this->expression=$expression;
     }
-    public function prepareCoefficient() : Processor
+
+    public function starter() : processor
+    {
+        $this->prepareCofficient();
+        $this->preparePower();
+        $powercofficients=$this->sepratePowerCofficient();
+        $powerCofficientArray=$this->makePowerCofficient($powercofficients);
+        return new processor($powerCofficientArray);
+    }
+
+    public function prepareCofficient()
     {
         if (
             $this->expression[0] != '+' &&
@@ -20,15 +32,14 @@ class Prepare
 
         $this->expression = str_replace(['+x', '-x'], ['+1x', '-1x'], $this->expression);
 
-        $monos = explode(' ', $this->expression);
-        unset($monos[0]);
-        $monos=$this->preparePower($monos);
-        return new Processor($monos);
+        $this->monos = explode(' ', $this->expression);
+        unset($this->monos[0]);
     }
-    private function preparePower(array $monos)
+
+    private function preparePower()
     {
         $i = 0;
-        foreach ($monos as $mono)
+        foreach ($this->monos as $mono)
         {
             if (
                  strpos($mono, 'x') &&
@@ -43,9 +54,28 @@ class Prepare
             }
             if(strpos($mono,'x^'))
             {
-                $temp[$i++] = $mono;
+                $strings[$i++] = $mono;
             }
         }
-        return $temp;
+        $this->monos=$strings;
     }
+
+    public function sepratePowerCofficient(): array
+    {
+        foreach ($this->monos as $mono)
+        {
+            $cofficientpowers[]=explode('x^',$mono);
+        }
+        return $cofficientpowers;
+    }
+
+    private function makePowerCofficient(array $cofficientpowers) : array
+    {
+        foreach ($cofficientpowers as $value)
+        {
+            $powerCofficientArray[]=new PowerCofficient($value[0],$value[1]);
+        }
+        return $powerCofficientArray;
+    }
+
 }
