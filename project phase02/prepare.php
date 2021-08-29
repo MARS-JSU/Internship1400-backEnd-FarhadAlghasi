@@ -13,10 +13,10 @@ class Prepare
     public function starter() : processor
     {
         $this->prepareCofficient();
+        $this->prepareMonos();
         $this->preparePower();
         $powercofficients=$this->sepratePowerCofficient();
-        $powerCofficientArray=$this->makePowerCofficient($powercofficients);
-        return new processor($powerCofficientArray);
+        return new processor($this->makePowerCofficient($powercofficients));
     }
 
     public function prepareCofficient()
@@ -31,7 +31,10 @@ class Prepare
         $this->expression = str_replace(['+', '-'], [' +', ' -'], $this->expression);
 
         $this->expression = str_replace(['+x', '-x'], ['+1x', '-1x'], $this->expression);
+    }
 
+    private function prepareMonos()
+    {
         $this->monos = explode(' ', $this->expression);
         unset($this->monos[0]);
     }
