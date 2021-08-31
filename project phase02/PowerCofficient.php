@@ -1,7 +1,6 @@
 <?php
-require_once "interfaces/powerCofficientInterface.php";
 
-class PowerCofficient implements powerCofficientInterface
+class PowerCofficient
 {
     private float $coefficient;
     private int $power;
@@ -22,7 +21,7 @@ class PowerCofficient implements powerCofficientInterface
         return $this->power;
     }
 
-    public function __toString() : string
+    public function __tostring() : string
     {
         if(
             $this->power!=0 &&
@@ -69,7 +68,7 @@ class PowerCofficient implements powerCofficientInterface
         return '';
     }
 
-    public function resultForX(float $x):float
+    public function resultForx(float $x):float
     {
         return $this->coefficient*($x**$this->power);
     }

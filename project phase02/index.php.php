@@ -16,8 +16,8 @@ echo "expression2= ".$process2->toString()."<br>";
 
 echo "<hr>";
 $x=2;
-echo "f1($x)= ",$process1->resultForX($x)."<br>";
-echo "f2($x)= ",$process2->resultForX($x)."<br>";
+echo "f1($x)= ",$process1->result($x)."<br>";
+echo "f2($x)= ",$process2->result($x)."<br>";
 
 echo "<hr>";
 echo "derivative exp1= ",$process1->derivative()->toString()."<br>";

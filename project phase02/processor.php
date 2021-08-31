@@ -1,9 +1,7 @@
 <?php
 require_once 'PowerCofficient.php';
-require_once 'simplify.php';
 class Processor
 {
-
     private array $powerCofficientArray;
 
     public function __construct($powerCofficientArray)
@@ -16,20 +14,70 @@ class Processor
         return $this->powerCofficientArray;
     }
 
+    private function powerCofficientArraySort()
+    {
+        $this->sortig($this->powerCofficientArray);
+    }
+
+    private function sortig($obj)
+    {
+        for($k=0;$k<count($obj)-1;$k++)
+        {
+            for($m=$k+1;$m<count($obj);$m++)
+            {
+                if($obj[$k]->getpower()<$obj[$m]->getpower())
+                {
+                    $temp=$obj[$k];
+                    $obj[$k]=$obj[$m];
+                    $obj[$m]=$temp;
+                }
+            }
+        }
+        $this->simplify($obj);
+    }
+
+    private function simplify($obj)
+    {
+            for($i=0;$i<count($obj)-1;)
+            {
+                $newcoef=$obj[$i]->getcoefficient();
+                for($j=$i+1;$j<count($obj);$j++)
+                {
+                    if($obj[$i]->getpower()==$obj[$j]->getpower())
+                    {
+                        settype($newcoef,'float');
+                        $newcoef=$newcoef+$obj[$j]->getcoefficient();
+                    }
+                    else
+                    {
+                        settype($newcoef,'float');
+                        $simple[]=new PowerCofficient($newcoef,$obj[$i]->getpower());
+                        $i=$j;
+                        $newcoef=$obj[$i]->getcoefficient();
+                    }
+                }
+                if($i!=$j)
+                {
+                    settype($newcoef,'float');
+                    $simple[]=new PowerCofficient($newcoef,$obj[$i]->getpower());
+                    $i=$j;
+                }
+            }
+            $this->powerCofficientArray=$simple;
+    }
+
     public function toString() : string
     {
-       $simplify=new simplify($this->powerCofficientArray);
-       $simplify->sorting();
-       $this->powerCofficientArray=$simplify->getPowerCofficientArray();
+       $this->powerCofficientArraySort();
        return implode('',$this->powerCofficientArray);
     }
 
-    public function resultForX($x) : float
+    public function result($x) : float
     {
         $res=0;
         foreach ($this->powerCofficientArray as $value)
         {
-            $res+=$value->resultForX($x);
+            $res+=$value->resultForx($x);
         }
         return $res;
     }
@@ -43,35 +91,27 @@ class Processor
         return new Processor($derivative);
     }
 
-    private function mergePowerCofficientArrays($array) : array
+    public function sum($object): processor
     {
-        return  array_merge($this->powerCofficientArray,$array);
+        $newpowercofficient=array_merge($this->powerCofficientArray,$object->getpowerCofficientArray());
+        return new processor($newpowercofficient);
     }
 
-    public function sum($objects): processor
+    public function sub($object): Processor
     {
-        return new processor( $this->mergePowerCofficientArrays($objects->getpowerCofficientArray()));
-    }
 
-    public function sub($array): Processor
-    {
-        return new Processor($this->mergePowerCofficientArrays($this->symmetry($array)));
-    }
-
-    private function symmetry($array):array
-    {
-        foreach ($array->getpowerCofficientArray() as $powercofficient)
+        foreach ($object->getpowerCofficientArray() as $powercofficient)
         {
-            $negative[]=$powercofficient->symmetry();
+          $negative[]=$powercofficient->symmetry();
         }
-        return $negative;
+        return new Processor(array_merge($this->powerCofficientArray,$negative));
     }
     
-    public function mul($objects): Processor
+    public function mul($object): Processor
     {
         foreach ($this->powerCofficientArray as $value)
         {
-            foreach ($objects->getpowerCofficientArray() as $item)
+            foreach ($object->getpowerCofficientArray() as $item)
             {
                 $newcof=$value->getcoefficient()*$item->getcoefficient();
                 $newpow=$value->getpower()+$item->getpower();
