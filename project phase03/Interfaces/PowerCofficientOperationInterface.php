@@ -2,7 +2,7 @@
 
 interface PowerCofficientOperationInterface
 {
-    public function resultForX(float $x):float;
+    public function resultForVariable(float $variable):float;
     public function derivative() : PowerCofficient;
     public function symmetry() : PowerCofficient;
 }

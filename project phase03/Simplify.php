@@ -1,9 +1,9 @@
 <?php
 require_once 'Interfaces/SimplifyInterface.php';
 
-class Simplify implements simplifyInterface
+class Simplify implements SimplifyInterface
 {
-    private $powerCofficientArray;
+    private array $powerCofficientArray;
 
     /**
      * simplify constructor.

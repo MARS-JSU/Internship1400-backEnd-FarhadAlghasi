@@ -2,10 +2,10 @@
 require_once "Interfaces/PowerCofficientOperationInterface.php";
 require_once 'Interfaces/StringableInterface.php';
 
-class PowerCofficient implements PowerCofficientOperationInterface,StringableInterface
+class PowerCofficient implements StringableInterface
 {
-    private  $coefficient;
-    private  $power;
+    private float $coefficient;
+    private int $power;
 
     public function __construct($coefficient,$power)
     {
@@ -68,23 +68,5 @@ class PowerCofficient implements PowerCofficientOperationInterface,StringableInt
             }
         }
         return '';
-    }
-
-    public function resultForX(float $x):float
-    {
-        return $this->coefficient*($x**$this->power);
-    }
-
-    public function derivative() : PowerCofficient
-    {
-            $newCofficient=$this->coefficient*$this->power;
-            $newpower=$this->power-1;
-            return new PowerCofficient($newCofficient,$newpower);
-    }
-
-    public function symmetry() : PowerCofficient
-    {
-        $newcoef=(-1)*$this->coefficient;
-        return new PowerCofficient($newcoef,$this->power);
     }
 }

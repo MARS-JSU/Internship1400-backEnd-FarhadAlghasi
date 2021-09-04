@@ -1,9 +1,10 @@
 <?php
 require_once 'processor.php';
-class Prepare
+require_once 'Interfaces/PrepareInterface.php';
+class Prepare implements PrepareInterface
 {
-    private $expression;
-    private $monos;
+    private string $expression;
+    private array $monos;
 
     public function __construct($expression)
     {
@@ -72,7 +73,7 @@ class Prepare
         return $cofficientpowers;
     }
 
-    private function makePowerCofficient(array $cofficientpowers) : array
+    public function makePowerCofficient(array $cofficientpowers) : array
     {
         foreach ($cofficientpowers as $value)
         {

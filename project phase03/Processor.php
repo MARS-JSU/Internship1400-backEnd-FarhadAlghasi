@@ -1,11 +1,13 @@
 <?php
 require_once 'PowerCofficient.php';
 require_once 'Simplify.php';
+require_once 'ToString.php';
+require_once 'PowerCofficientOperation.php';
+require_once 'Interfaces/ProcessorInterface.php';
 
-class Processor
+class Processor implements ProcessorInterface
 {
-
-    private  $powerCofficientArray;
+    private array $powerCofficientArray;
 
     public function __construct($powerCofficientArray)
     {
@@ -17,31 +19,40 @@ class Processor
         return $this->powerCofficientArray;
     }
 
-    public function toString() : string
+    public function simplify()
     {
-       $simplify=new simplify($this->powerCofficientArray);
-       $simplify->sorting();
-       $this->powerCofficientArray=$simplify->getPowerCofficientArray();
-       return implode('',$this->powerCofficientArray);
+        $simplify=new Simplify($this->powerCofficientArray);
+        $simplify->sorting();
+        $this->powerCofficientArray=$simplify->getPowerCofficientArray();
     }
 
-    public function resultForX($x) : float
+    public function toString() : ToStringInterface
+    {
+        $this->simplify();
+        return new ToString($this->powerCofficientArray);
+    }
+
+    public function resultForVariable($x) : float
     {
         $res=0;
         foreach ($this->powerCofficientArray as $value)
         {
-            $res+=$value->resultForX($x);
+            $powerCofficientOperation=new PowerCofficientOperation($value);
+            $res+= $powerCofficientOperation->resultForVariable($x);
         }
         return $res;
     }
 
-    public function derivative() : Processor
+    public function derivative() : ToStringInterface
     {
         foreach ($this->powerCofficientArray as $powercofficient)
         {
-            $derivative[]=$powercofficient->derivative();
+            $powerCofficientOperation=new PowerCofficientOperation($powercofficient);
+            $derivative[]=$powerCofficientOperation->derivative();
         }
-        return new Processor($derivative);
+        $newProcessor=new Processor($derivative);
+        $newProcessor->simplify();
+        return new ToString($newProcessor->getpowerCofficientArray());
     }
 
     private function mergePowerCofficientArrays($array) : array
@@ -49,26 +60,27 @@ class Processor
         return  array_merge($this->powerCofficientArray,$array);
     }
 
-    public function sum($objects): processor
+    public function sum($objects): ToStringInterface
     {
-        return new processor( $this->mergePowerCofficientArrays($objects->getpowerCofficientArray()));
+        return new ToString( $this->mergePowerCofficientArrays($objects->getpowerCofficientArray()));
     }
 
-    public function sub($array): Processor
+    public function sub($array): ToStringInterface
     {
-        return new Processor($this->mergePowerCofficientArrays($this->symmetry($array)));
+        return new ToString($this->mergePowerCofficientArrays($this->symmetry($array)));
     }
 
     private function symmetry($array):array
     {
         foreach ($array->getpowerCofficientArray() as $powercofficient)
         {
-            $negative[]=$powercofficient->symmetry();
+            $powerCofficientOperation=new PowerCofficientOperation($powercofficient);
+            $negative[]=$powerCofficientOperation->symmetry();
         }
         return $negative;
     }
     
-    public function mul($objects): Processor
+    public function mul($objects): ToStringInterface
     {
         foreach ($this->powerCofficientArray as $value)
         {
@@ -79,6 +91,6 @@ class Processor
                 $newpowercofficient[]=new PowerCofficient($newcof,$newpow);
             }
         }
-         return new processor($newpowercofficient);
+         return new ToString($newpowercofficient);
     }
 }

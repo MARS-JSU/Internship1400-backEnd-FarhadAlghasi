@@ -1,6 +1,6 @@
 <?php
 
-interface simplifyInterface
+interface SimplifyInterface
 {
   public function getPowerCofficientArray();
   public function sorting();
