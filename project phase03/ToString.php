@@ -1,7 +1,8 @@
 <?php
 require_once 'Simplify.php';
-require_once 'Interfaces\ToStringInterface.php';
-class ToString implements ToStringInterface
+require_once 'Interfaces/StringableInterface.php';
+
+class ToString implements StringableInterface
 {
     private array $powerCofficientArray;
 
@@ -15,9 +16,8 @@ class ToString implements ToStringInterface
         $this->powerCofficientArray = $powerCofficientArray;
     }
 
-    public function toString() : string
+    public function __toString() : string
     {
         return implode('',$this->powerCofficientArray);
     }
-
 }

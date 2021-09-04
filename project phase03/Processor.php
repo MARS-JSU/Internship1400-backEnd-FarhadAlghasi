@@ -26,7 +26,7 @@ class Processor implements ProcessorInterface
         $this->powerCofficientArray=$simplify->getPowerCofficientArray();
     }
 
-    public function toString() : ToStringInterface
+    public function toString() : ToString
     {
         $this->simplify();
         return new ToString($this->powerCofficientArray);
@@ -43,7 +43,7 @@ class Processor implements ProcessorInterface
         return $res;
     }
 
-    public function derivative() : ToStringInterface
+    public function derivative() : ToString
     {
         foreach ($this->powerCofficientArray as $powercofficient)
         {
@@ -60,12 +60,12 @@ class Processor implements ProcessorInterface
         return  array_merge($this->powerCofficientArray,$array);
     }
 
-    public function sum($objects): ToStringInterface
+    public function sum($objects): ToString
     {
         return new ToString( $this->mergePowerCofficientArrays($objects->getpowerCofficientArray()));
     }
 
-    public function sub($array): ToStringInterface
+    public function sub($array): ToString
     {
         return new ToString($this->mergePowerCofficientArrays($this->symmetry($array)));
     }
@@ -80,7 +80,7 @@ class Processor implements ProcessorInterface
         return $negative;
     }
     
-    public function mul($objects): ToStringInterface
+    public function mul($objects): ToString
     {
         foreach ($this->powerCofficientArray as $value)
         {
