@@ -54,7 +54,6 @@ class Simplify implements SimplifyInterface
                 }
                 else
                 {
-                    settype($newcoef,'float');
                     $simple[]=new PowerCofficient($newcoef,$this->powerCofficientArray[$i]->getpower());
                     $i=$j;
                     $newcoef=$this->powerCofficientArray[$i]->getcoefficient();
@@ -62,7 +61,6 @@ class Simplify implements SimplifyInterface
             }
             if($i!=$j)
             {
-                settype($newcoef,'float');
                 $simple[]=new PowerCofficient($newcoef,$this->powerCofficientArray[$i]->getpower());
                 $i=$j;
             }
